@@ -11,7 +11,7 @@ const rolePanel = document.getElementById('role-panel');
 const messageDiv = document.getElementById('message');
 
 // Base URL del backend
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = '/api';
 
 // --- Utilidades ---
 
