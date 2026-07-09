@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solicitud de Vacaciones</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Sistema de Solicitud de Vacaciones</h1>
+
+        <!-- Selector de usuario-->
+        <div id="login-section">
+            <label for="role-select">Selecciona tu rol:</label>
+            <select id="role-select">
+                <option value="employee1">Empleado (employee1)</option>
+                <option value="boss1">Jefe (boss1)</option>
+                <option value="hr1">RRHH (hr1)</option>
+            </select>
+            <button id="login-btn">Ingresar</button>
+        </div>
+
+        <!-- Contenido según el rol -->
+        <div id="content" style="display: none;">
+            <h2 id="user-info">Bienvenido, <span id="username-display"></span></h2>
+            <div id="role-panel"></div>
+        </div>
+
+        <!-- Área para mostrar mensajes -->
+        <div id="message"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
