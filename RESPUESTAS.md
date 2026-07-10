@@ -17,7 +17,7 @@ Integré un servicio de IA para generar observaciones de riesgo operativo al con
 Elegí **Spring Boot + Java** porque es el stack que mejor conozco y he trabajado recientemente en otro proyecto del cual reutilicé logica en este. Además, Spring Boot ofrece un ecosistema que permite construir rápidamente una aplicación confiable.
 
 **Alternativas descartadas**:
-- **Base de datos PostgreSQL en desarrollo**: Descartado por simplicidad; H2 en memoria es ideal para pruebas y no requiere instalación adicional.
+- **Base de datos temporal con H2**: Descartado por integracion directa de PostgreSQL desde render.
 
 ---
 
@@ -45,7 +45,6 @@ El sistema está diseñado con **validaciones explícitas en cada transición de
 ## 6. Si esto se usara de verdad con 200 empleados, ¿qué cambiarías o qué se rompería?
 
 **Cambios necesarios**:
-- **Base de datos**: usaría PostgreSQL o MySQL en producción para persistencia.
 - **Autenticación**: Basic Auth en texto plano es inseguro; usaría JWT + OAuth2.
 - **Seguridad**: Passwords hasheadas con BCrypt en lugar de `{noop}`.
 - **Notificaciones**: Enviar correos electrónicos al cambiar de estado (con Spring Mail).
@@ -75,7 +74,7 @@ Lo más difícil fue **el manejo de días hábiles y festivos colombianos**. Lo 
 
 ## 9. ¿Cuánto tiempo real te tomó? (Y si usaste IA, aprox. qué porcentaje hizo ella.)
 
-Fue de aproximadamente **10 horas distribuidas en 2 días**.
+Fue de aproximadamente **12 horas distribuidas en 2 días**.
 
 - **IA (ChatGPT + Copilot)**: Ayudó en un **30-40%** del código, especialmente en Frontend y en la resolución de dudas de configuración.
 - **El resto** fue trabajo manual: configuración de seguridad, lógica de negocio, pruebas, frontend, corrección de errores y despliegue pero reciclé codigo de otro proyecto que me servia.
