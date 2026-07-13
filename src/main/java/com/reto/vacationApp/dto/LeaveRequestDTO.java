@@ -9,14 +9,15 @@ import java.time.LocalDate;
 
 @Data
 public class LeaveRequestDTO {
-    @NotNull
-    @Future
+
+    @NotNull(message = "La fecha de inicio es obligatoria.")
+    @Future(message = "La fecha de inicio debe ser futura.")
     private LocalDate startDate;
 
-    @NotNull
-    @Future
+    @NotNull(message = "La fecha de fin es obligatoria.")
+    @Future(message = "La fecha de fin debe ser futura.")
     private LocalDate endDate;
 
-    @NotBlank
+    @NotBlank(message = "El motivo es obligatorio.")
     private String reason;
 }

@@ -51,11 +51,34 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         const response = await fetch(url, options);
         if (!response.ok) {
             let errorText = await response.text();
+            let errorMessage = '';
+
             try {
                 const errorJson = JSON.parse(errorText);
-                errorText = errorJson.message || errorText;
-            } catch (e) {}
-            throw new Error(errorText);
+                if (typeof errorJson === 'object' && errorJson !== null) {
+                    // Si tiene campo 'message' o 'error'
+                    if (errorJson.message) {
+                        errorMessage = errorJson.message;
+                    } else if (errorJson.error) {
+                        errorMessage = errorJson.error;
+                    } else {
+                        const messages = Object.values(errorJson).filter(val => typeof val === 'string' && val.length > 0);
+                        if (messages.length > 0) {
+                            errorMessage = messages.join('. ');
+                        }
+                    }
+                } else {
+                    errorMessage = String(errorJson);
+                }
+            } catch (e) {
+                errorMessage = errorText;
+            }
+
+            errorMessage = errorMessage.replace(/^Error \d+:\s*/, '');
+            if (!errorMessage || errorMessage.trim() === '') {
+                errorMessage = 'Ocurrió un error al procesar la solicitud.';
+            }
+            throw new Error(errorMessage);
         }
         if (response.status === 204) {
             return null;
@@ -67,6 +90,17 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         }
         throw error;
     }
+}
+
+// --- Traducción de roles ---
+
+function translateRole(role) {
+    const map = {
+        'EMPLOYEE': 'Empleado',
+        'BOSS': 'Jefe',
+        'HR': 'Recursos Humanos'
+    };
+    return map[role] || role;
 }
 
 // --- Funciones de renderizado según rol ---
@@ -324,9 +358,10 @@ async function checkBalance() {
     resultDiv.innerHTML = '<p class="loading">Consultando...</p>';
     try {
         const data = await apiRequest(`/hr/balances/${id}`);
+        const roleSpanish = translateRole(data.user.role);
         resultDiv.innerHTML = `
             <p><strong>Empleado:</strong> ${data.user.fullName} (${data.user.username})</p>
-            <p><strong>Rol:</strong> ${data.user.role}</p>
+            <p><strong>Rol:</strong> ${roleSpanish}</p>
             <p><strong>Año:</strong> ${data.year}</p>
             <p><strong>Días totales:</strong> ${data.totalDays}</p>
             <p><strong>Días usados:</strong> ${data.usedDays}</p>
@@ -358,11 +393,11 @@ loginBtn.addEventListener('click', () => {
     contentDiv.style.display = 'block';
     clearMessage();
 
-    if (selectedUser === 'employee1') {
+    if (selectedUser === 'ManuelLara') {
         renderEmployeePanel();
-    } else if (selectedUser === 'boss1') {
+    } else if (selectedUser === 'RobertoTapiasPO') {
         renderBossPanel();
-    } else if (selectedUser === 'hr1') {
+    } else if (selectedUser === 'AlejaRRHH') {
         renderHRPanel();
     }
 });

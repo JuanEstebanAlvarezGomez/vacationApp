@@ -23,9 +23,9 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() == 0) {
-            User emp = new User(null, "employee1", "Empleado Uno", Role.EMPLOYEE);
-            User boss = new User(null, "boss1", "Jefe Uno", Role.BOSS);
-            User hr = new User(null, "hr1", "RRHH Uno", Role.HR);
+            User emp = new User(null, "ManuelLara", "ManuelLara", Role.EMPLOYEE);
+            User boss = new User(null, "RobertoTapiasPO", "Roberto Tapias", Role.BOSS);
+            User hr = new User(null, "AlejaRRHH", "Alejandra Rueda", Role.HR);
             userRepository.save(emp);
             userRepository.save(boss);
             userRepository.save(hr);

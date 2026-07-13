@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 public class ApprovalDTO {
-    @NotBlank
+
+    @NotBlank(message = "El comentario es obligatorio.")
     private String comment;
 }
