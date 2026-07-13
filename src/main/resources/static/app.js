@@ -10,7 +10,6 @@ const usernameDisplay = document.getElementById('username-display');
 const rolePanel = document.getElementById('role-panel');
 const messageDiv = document.getElementById('message');
 
-// Base URL del backend
 const API_BASE = '/api';
 
 // --- Utilidades ---
@@ -18,6 +17,7 @@ const API_BASE = '/api';
 function showMessage(text, type = 'success') {
     messageDiv.textContent = text;
     messageDiv.className = type;
+    messageDiv.style.display = 'block';
     setTimeout(() => {
         messageDiv.style.display = 'none';
     }, 5000);
@@ -57,7 +57,9 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
         }
         return await response.json();
     } catch (error) {
-        showMessage(`Error: ${error.message}`, 'error');
+        if (!error.message.includes('Error')) {
+            throw new Error('Error de conexión con el servidor.');
+        }
         throw error;
     }
 }
@@ -91,7 +93,6 @@ function renderEmployeePanel() {
         </div>
     `;
 
-    // Evento para crear solicitud
     document.getElementById('request-form').addEventListener('submit', async (e) => {
         e.preventDefault();
         clearMessage();
@@ -111,13 +112,11 @@ function renderEmployeePanel() {
             document.getElementById('request-form').reset();
             loadEmployeeRequests();
         } catch (error) {
+            showMessage(error.message, 'error');
         }
     });
 
-    // Evento para actualizar listado
     document.getElementById('refresh-employee').addEventListener('click', loadEmployeeRequests);
-
-    // Cargar solicitudes al inicio
     loadEmployeeRequests();
 }
 
@@ -146,7 +145,7 @@ async function loadEmployeeRequests() {
         html += '</tbody></table>';
         container.innerHTML = html;
     } catch (error) {
-        container.innerHTML = '<p>Error al cargar solicitudes.</p>';
+        container.innerHTML = `<p style="color:red;">Error al cargar solicitudes: ${error.message}</p>`;
     }
 }
 
@@ -189,7 +188,6 @@ async function loadBossPending() {
         html += '</tbody></table>';
         container.innerHTML = html;
 
-        // Eventos para aprobar/rechazar
         document.querySelectorAll('.approve-btn').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = btn.dataset.id;
@@ -199,7 +197,9 @@ async function loadBossPending() {
                     await apiRequest(`/boss/requests/${id}/approve`, 'PUT', { comment });
                     showMessage('Solicitud aprobada.');
                     loadBossPending();
-                } catch (error) {}
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                }
             });
         });
 
@@ -212,12 +212,14 @@ async function loadBossPending() {
                     await apiRequest(`/boss/requests/${id}/reject`, 'PUT', { comment });
                     showMessage('Solicitud rechazada.');
                     loadBossPending();
-                } catch (error) {}
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                }
             });
         });
 
     } catch (error) {
-        container.innerHTML = '<p>Error al cargar pendientes.</p>';
+        container.innerHTML = `<p style="color:red;">Error al cargar pendientes: ${error.message}</p>`;
     }
 }
 
@@ -280,7 +282,9 @@ async function loadHRPending() {
                     await apiRequest(`/hr/requests/${id}/confirm`, 'PUT', { comment });
                     showMessage('Solicitud confirmada (días descontados).');
                     loadHRPending();
-                } catch (error) {}
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                }
             });
         });
 
@@ -293,12 +297,14 @@ async function loadHRPending() {
                     await apiRequest(`/hr/requests/${id}/reject`, 'PUT', { comment });
                     showMessage('Solicitud rechazada por RRHH.');
                     loadHRPending();
-                } catch (error) {}
+                } catch (error) {
+                    showMessage(error.message, 'error');
+                }
             });
         });
 
     } catch (error) {
-        container.innerHTML = '<p>Error al cargar pendientes.</p>';
+        container.innerHTML = `<p style="color:red;">Error al cargar pendientes de RRHH: ${error.message}</p>`;
     }
 }
 
@@ -321,11 +327,9 @@ async function checkBalance() {
             <p><strong>Días restantes:</strong> ${data.remainingDays}</p>
         `;
     } catch (error) {
-        resultDiv.innerHTML = '<p>Error al consultar saldo.</p>';
+        resultDiv.innerHTML = `<p style="color:red;">Error al consultar saldo: ${error.message}</p>`;
     }
 }
-
-// --- Función de traducción de estados ---
 
 function translateStatus(status) {
     const map = {
@@ -348,7 +352,6 @@ loginBtn.addEventListener('click', () => {
     contentDiv.style.display = 'block';
     clearMessage();
 
-    // Renderizar panel según rol
     if (selectedUser === 'employee1') {
         renderEmployeePanel();
     } else if (selectedUser === 'boss1') {
@@ -358,5 +361,4 @@ loginBtn.addEventListener('click', () => {
     }
 });
 
-// --- Inicio: ocultar contenido hasta login ---
 contentDiv.style.display = 'none';
