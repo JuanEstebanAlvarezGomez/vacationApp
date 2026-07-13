@@ -48,9 +48,9 @@ https://mermaid.ai/d/429a7dab-e462-4482-9efa-f03c28e1f018
 
 2. Ingresa las credenciales de inicio, **ya estan definidas**:
 
-- **Empleado**: ManuelLara | pass    (ID: 4)
-- **Jefe**: RobertoTapiasPO | pass   (ID: 5)
-- **RRHH**: AlejaRRHH | pass         (ID: 6)
+- **Empleado**: ManuelLara | pass    (ID: 4 para consulta)
+- **Jefe**: RobertoTapiasPO | pass   (ID: 5 para consulta)
+- **RRHH**: AlejaRRHH | pass         (ID: 6 para consulta)
 
 3. Selecciona un rol en el desplegable y haz clic en "Ingresar".
 
