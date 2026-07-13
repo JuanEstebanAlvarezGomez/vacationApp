@@ -35,17 +35,17 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService users() {
         UserDetails employee = User.builder()
-                .username("employee1")
+                .username("ManuelLara")
                 .password("{noop}pass")
                 .roles("EMPLOYEE")
                 .build();
         UserDetails boss = User.builder()
-                .username("boss1")
+                .username("RobertoTapiasPO")
                 .password("{noop}pass")
                 .roles("BOSS")
                 .build();
         UserDetails hr = User.builder()
-                .username("hr1")
+                .username("AlejaRRHH")
                 .password("{noop}pass")
                 .roles("HR")
                 .build();
