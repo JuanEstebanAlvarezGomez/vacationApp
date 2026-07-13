@@ -10,6 +10,7 @@ const usernameDisplay = document.getElementById('username-display');
 const rolePanel = document.getElementById('role-panel');
 const messageDiv = document.getElementById('message');
 
+// Base URL del backend
 const API_BASE = '/api';
 
 // --- Utilidades ---
@@ -49,16 +50,20 @@ async function apiRequest(endpoint, method = 'GET', body = null) {
     try {
         const response = await fetch(url, options);
         if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Error ${response.status}: ${errorText}`);
+            let errorText = await response.text();
+            try {
+                const errorJson = JSON.parse(errorText);
+                errorText = errorJson.message || errorText;
+            } catch (e) {}
+            throw new Error(errorText);
         }
         if (response.status === 204) {
             return null;
         }
         return await response.json();
     } catch (error) {
-        if (!error.message.includes('Error')) {
-            throw new Error('Error de conexión con el servidor.');
+        if (!error.message || error.message.includes('Failed to fetch')) {
+            throw new Error('Error de conexión con el servidor. Verifica tu internet.');
         }
         throw error;
     }
@@ -145,7 +150,7 @@ async function loadEmployeeRequests() {
         html += '</tbody></table>';
         container.innerHTML = html;
     } catch (error) {
-        container.innerHTML = `<p style="color:red;">Error al cargar solicitudes: ${error.message}</p>`;
+        container.innerHTML = '<p style="color:red;">No se pudo cargar tu historial. Intenta de nuevo.</p>';
     }
 }
 
@@ -168,7 +173,7 @@ async function loadBossPending() {
     try {
         const data = await apiRequest('/boss/pending');
         if (data.length === 0) {
-            container.innerHTML = '<p>No hay solicitudes pendientes.</p>';
+            container.innerHTML = '<p>No hay solicitudes pendientes de aprobación.</p>';
             return;
         }
         let html = '<table><thead><tr><th>ID</th><th>Empleado</th><th>Desde</th><th>Hasta</th><th>Motivo</th><th>Acciones</th></tr></thead><tbody>';
@@ -219,7 +224,7 @@ async function loadBossPending() {
         });
 
     } catch (error) {
-        container.innerHTML = `<p style="color:red;">Error al cargar pendientes: ${error.message}</p>`;
+        container.innerHTML = '<p style="color:red;">No se pudieron cargar las solicitudes pendientes. Intenta de nuevo.</p>';
     }
 }
 
@@ -231,7 +236,7 @@ function renderHRPanel() {
             <div id="hr-pending"></div>
         </div>
         <div class="section">
-            <h3>Consultar saldo de un empleado</h3>
+            <h3>Consultar información de vacaciones de un empleado</h3>
             <div>
                 <label>ID del empleado:</label>
                 <input type="number" id="employee-id-balance" placeholder="Ej: 1">
@@ -280,7 +285,7 @@ async function loadHRPending() {
                 if (comment === null) return;
                 try {
                     await apiRequest(`/hr/requests/${id}/confirm`, 'PUT', { comment });
-                    showMessage('Solicitud confirmada (días descontados).');
+                    showMessage('Solicitud confirmada y días descontados.');
                     loadHRPending();
                 } catch (error) {
                     showMessage(error.message, 'error');
@@ -304,7 +309,7 @@ async function loadHRPending() {
         });
 
     } catch (error) {
-        container.innerHTML = `<p style="color:red;">Error al cargar pendientes de RRHH: ${error.message}</p>`;
+        container.innerHTML = '<p style="color:red;">No se pudieron cargar las solicitudes pendientes de RRHH. Intenta de nuevo.</p>';
     }
 }
 
@@ -321,13 +326,14 @@ async function checkBalance() {
         const data = await apiRequest(`/hr/balances/${id}`);
         resultDiv.innerHTML = `
             <p><strong>Empleado:</strong> ${data.user.fullName} (${data.user.username})</p>
+            <p><strong>Rol:</strong> ${data.user.role}</p>
             <p><strong>Año:</strong> ${data.year}</p>
             <p><strong>Días totales:</strong> ${data.totalDays}</p>
             <p><strong>Días usados:</strong> ${data.usedDays}</p>
-            <p><strong>Días restantes:</strong> ${data.remainingDays}</p>
+            <p><strong>Días disponibles:</strong> ${data.remainingDays}</p>
         `;
     } catch (error) {
-        resultDiv.innerHTML = `<p style="color:red;">Error al consultar saldo: ${error.message}</p>`;
+        resultDiv.innerHTML = `<p style="color:red;">${error.message}</p>`;
     }
 }
 
